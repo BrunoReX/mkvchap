@@ -1,0 +1,1 @@
+This software is intended for creating a sequential chapter file for several files that will be joined together into a single Matroska file.
