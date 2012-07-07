@@ -481,6 +481,7 @@ public class MKVChap {
 				tabbedPane.setEnabled(false);
 				durations = new ArrayList<String>();
 				
+				String total = "";
 				int size = String.valueOf(modelFiles.size()).length();
 				for (int i = 0; i < modelFiles.size(); i++) {
 					try {	
@@ -498,16 +499,17 @@ public class MKVChap {
 			            	if (i == 1) {
 			            		time = durations.get(i-1);
 			            	} else {
-			            		time = sumTime(durations.get(i-1), durations.get(i));
+			            		time = sumTime(total, durations.get(i-1));
 			            	}
 			            	
-			            	durations.set(i, time);
+			            	total = time;
 			            }
 			            
 			            String num = Utils.padNumber(size, i+1);
+			            String name = Utils.getFileNameWithoutExt((String) modelFiles.get(i));
 			            
 			            txtOutput.append("CHAPTER" + num + "=" + time + "\n");
-			        	txtOutput.append("CHAPTER" + num + "NAME=" + num + "\n");
+			        	txtOutput.append("CHAPTER" + num + "NAME=" + name + "\n");
 			        	
 			        	txtOutput.setCaretPosition(txtOutput.getText().length());
 			        	
@@ -532,11 +534,10 @@ public class MKVChap {
     }
     
 
-    
     public String sumTime(String date1, String date2) {
     	time = new TimeInterval(date1);
     	time = time.add(new TimeInterval(date2));
 
     	return time.toString();
-    }	
+    }
 }

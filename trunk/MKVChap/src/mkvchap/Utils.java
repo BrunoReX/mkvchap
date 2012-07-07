@@ -26,6 +26,7 @@
 package mkvchap;
 
 import java.awt.event.*;
+import java.io.File;
 import java.text.*;
 import javax.swing.*;
 import javax.swing.text.*;
@@ -101,5 +102,18 @@ public class Utils {
 		}
 		
 		return formatter.format(number);
+	}
+	
+	public static String getFileNameWithoutExt(String file) {
+		File f = new File(file);
+		
+		file = f.getName();
+		
+		int dotIndex = file.lastIndexOf(".");
+		if (dotIndex != -1) {
+			return file.substring(0, dotIndex);
+		} else {
+			return file;
+		}
 	}
 }
