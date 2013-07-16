@@ -49,16 +49,17 @@ public class TimeInterval {
 
     private TimeInterval() { }
 
+
     public TimeInterval add(TimeInterval interval) {
         TimeInterval ret = new TimeInterval();
         ret.milliSeconds = (short) ((interval.milliSeconds + milliSeconds) % 1000);
         int carry = (interval.milliSeconds + milliSeconds) / 1000;
 
-        ret.seconds = (short) ((interval.seconds + seconds) %60 + carry);
-        carry = (interval.seconds + seconds) / 60;
+        ret.seconds = (short) ((interval.seconds + seconds + carry) %60 );
+        carry = (interval.seconds + seconds + carry) / 60;
 
-        ret.minutes = (short) ((interval.minutes + minutes) %60 + carry);
-        carry = (interval.minutes + minutes) / 60;
+        ret.minutes = (short) ((interval.minutes + minutes + carry) %60);
+        carry = (interval.minutes + minutes + carry) / 60;
 
         ret.hours = (interval.hours + hours + carry);
         return ret;
