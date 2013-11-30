@@ -16,8 +16,6 @@ package io.github.brunorex;
 import static java.util.Collections.singletonMap;
 
 import java.lang.reflect.Method;
-import java.net.URL;
-
 import com.sun.jna.FunctionMapper;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
@@ -37,13 +35,13 @@ class MediaInfo
             // We need to load dependencies first, because we know where our native libs are (e.g. Java Web Start Cache).
             // If we do not, the system will look for dependencies, but only in the library path.
             String os=System.getProperty("os.name");
-			
+
             // Hack to load 64-bit DLL under a different name
             if (os!=null && os.toLowerCase().startsWith("windows") && Platform.is64Bit())
             {
                 LibraryPath = "mediainfo64";
             }
-			
+
             if (os!=null && !os.toLowerCase().startsWith("windows") && !os.toLowerCase().startsWith("mac"))
             {
                 final ClassLoader loader=MediaInfo.class.getClassLoader();

@@ -38,8 +38,8 @@ import javax.swing.filechooser.*;
 public class MKVChap {
     private JFrame frmMKVChap;
     private JTabbedPane tabbedPane;
-    private DefaultListModel modelFiles = new DefaultListModel();
-    private JList listFiles;
+    private DefaultListModel<String> modelFiles = new DefaultListModel<String>();
+    private JList<String> listFiles;
     private JTextArea txtOutput;
     private JButton btnSaveToFile;
     private JButton btnCreateChaptersFile;
@@ -150,7 +150,7 @@ public class MKVChap {
         JScrollPane spInput = new JScrollPane();
         pnlInput.add(spInput, BorderLayout.CENTER);
 
-        listFiles = new JList();
+        listFiles = new JList<String>();
         listFiles.setModel(modelFiles);
         spInput.setViewportView(listFiles);
 
