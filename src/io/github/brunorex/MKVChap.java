@@ -131,7 +131,7 @@ public class MKVChap {
      */
     private void initialize() {
         frmMKVChap = new JFrame();
-        frmMKVChap.setTitle("MKVChap");
+        frmMKVChap.setTitle("MKVChap 0.4");
         frmMKVChap.setBounds(100, 100, 688, 438);
         frmMKVChap.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -438,6 +438,11 @@ public class MKVChap {
 
                     try {
                         File file = saveDialog.getSelectedFile();
+
+                        if (saveDialog.getFileFilter() == TXT_EXT_FILTER && !TXT_EXT_FILTER.accept(file)) {
+                            file = new File(file.getCanonicalPath() + ".txt");
+                        }
+
                         FileWriter fw = new FileWriter(file);
                         fw.write(txtOutput.getText());
                         fw.close();
