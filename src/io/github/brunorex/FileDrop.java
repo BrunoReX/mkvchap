@@ -1,4 +1,3 @@
-package mkvchap;
 /*
  * Copyright (c) 2012-2013 Bruno Barbieri
  * All rights reserved.
@@ -24,6 +23,7 @@ package mkvchap;
  *
  */
 
+package io.github.brunorex;
 
 import java.awt.Component;
 import java.awt.Container;

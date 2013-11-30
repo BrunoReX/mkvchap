@@ -23,7 +23,7 @@
  *
  */
 
-package mkvchap;
+package io.github.brunorex;
 
 import java.awt.event.*;
 import java.io.File;

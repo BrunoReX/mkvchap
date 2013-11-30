@@ -23,7 +23,7 @@
  *
  */
 
-package mkvchap;
+package io.github.brunorex;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

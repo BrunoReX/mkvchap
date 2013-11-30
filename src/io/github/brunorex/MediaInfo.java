@@ -1,24 +1,8 @@
-/**
- * MediaInfoDLL - All info about media files, for DLL (JNA version)
+/*  Copyright (c) MediaArea.net SARL. All Rights Reserved.
  *
- * Copyright (C) 2009-2009 Jerome Martinez, Zen@MediaArea.net
- *
- * This library is free software: you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library. If not, see <http://www.gnu.org/licenses/>.
- *
- **/
-
-package mkvchap;
+ *  Use of this source code is governed by a BSD-style license that can
+ *  be found in the License.html file in the root of the source tree.
+ */
 
 // Note: the original stuff was well packaged with Java style,
 // but I (the main developer) prefer to keep an easiest for me
@@ -27,9 +11,12 @@ package mkvchap;
 // "package net.sourceforge.mediainfo;"
 // directory was /net/sourceforge/mediainfo
 
+package io.github.brunorex;
+
 import static java.util.Collections.singletonMap;
 
 import java.lang.reflect.Method;
+import java.net.URL;
 
 import com.sun.jna.FunctionMapper;
 import com.sun.jna.Library;
@@ -41,25 +28,55 @@ import com.sun.jna.WString;
 
 class MediaInfo
 {
-    private static String libname = "mediainfo";
-
+    static String LibraryPath="mediainfo";
     static
     {
-
-        String os=System.getProperty("os.name");
-
-          if (os.toLowerCase().startsWith("windows") && Platform.is64Bit()) {
-            libname = "mediainfo64";
-        }
-
         // libmediainfo for linux depends on libzen
         try
         {
             // We need to load dependencies first, because we know where our native libs are (e.g. Java Web Start Cache).
             // If we do not, the system will look for dependencies, but only in the library path.
-
+            String os=System.getProperty("os.name");
+			
+            // Hack to load 64-bit DLL under a different name
+            if (os!=null && os.toLowerCase().startsWith("windows") && Platform.is64Bit())
+            {
+                LibraryPath = "mediainfo64";
+            }
+			
             if (os!=null && !os.toLowerCase().startsWith("windows") && !os.toLowerCase().startsWith("mac"))
-                NativeLibrary.getInstance("zen");
+            {
+                final ClassLoader loader=MediaInfo.class.getClassLoader();
+                final String LocalPath;
+                if (loader!=null)
+                {
+                    LocalPath=loader.getResource(MediaInfo.class.getName().replace('.', '/')+ ".class").getPath().replace("MediaInfo.class", "");
+                    try
+                    {
+                        NativeLibrary.getInstance(LocalPath+"libzen.so.0"); // Local path
+                    }
+                    catch (LinkageError e)
+                    {
+                        NativeLibrary.getInstance("zen"); // Default path
+                    }
+                }
+                else
+                {
+                    LocalPath="";
+                    NativeLibrary.getInstance("zen"); // Default path
+                }
+                if (LocalPath.length()>0)
+                {
+                    try
+                    {
+                        NativeLibrary.getInstance(LocalPath+"libmediainfo.so.0"); // Local path
+                        LibraryPath=LocalPath+"libmediainfo.so.0";
+                    }
+                    catch (LinkageError e)
+                    {
+                    }
+                }
+            }
         }
         catch (LinkageError  e)
         {
@@ -71,15 +88,12 @@ class MediaInfo
     interface MediaInfoDLL_Internal extends Library
     {
 
-
-
-        MediaInfoDLL_Internal INSTANCE = (MediaInfoDLL_Internal) Native.loadLibrary(libname, MediaInfoDLL_Internal.class, singletonMap(OPTION_FUNCTION_MAPPER, new FunctionMapper()
+        MediaInfoDLL_Internal INSTANCE = (MediaInfoDLL_Internal) Native.loadLibrary(LibraryPath, MediaInfoDLL_Internal.class, singletonMap(OPTION_FUNCTION_MAPPER, new FunctionMapper()
             {
 
                 @Override
                 public String getFunctionName(NativeLibrary lib, Method method)
                 {
-                    // MediaInfo_New(), MediaInfo_Open() ...
                     return "MediaInfo_" + method.getName();
                 }
             }
@@ -110,7 +124,7 @@ class MediaInfo
         Video,
         Audio,
         Text,
-        Chapters,
+        Other,
         Image,
         Menu;
     }
@@ -308,7 +322,11 @@ class MediaInfo
      */
     public int Count_Get(StreamKind StreamKind)
     {
-        return MediaInfoDLL_Internal.INSTANCE.Count_Get(Handle, StreamKind.ordinal(), -1);
+        //We should use NativeLong for -1, but it fails on 64-bit
+        //int Count_Get(Pointer Handle, int StreamKind, NativeLong StreamNumber);
+        //return MediaInfoDLL_Internal.INSTANCE.Count_Get(Handle, StreamKind.ordinal(), -1);
+        //so we use slower Get() with a character string
+        return Integer.parseInt(Get(StreamKind, 0, "StreamCount").toString());
     }
 
 
